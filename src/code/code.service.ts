@@ -13,6 +13,8 @@ export class CodeService {
     input: string,
     fileName: string,
   ) {
+    console.log('received');
+
     let output;
     if (language === 'java') {
       const filePath = await this.writeCodeToFile(
@@ -59,6 +61,8 @@ export class CodeService {
       fs.mkdirSync(directoryPath, { recursive: true });
     }
     const filePath = path.join(directoryPath, fileName);
+    console.log(filePath);
+
     fs.writeFileSync(filePath, code);
     return filePath;
   }
