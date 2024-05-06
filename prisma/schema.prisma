@@ -1,0 +1,44 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Files File[]
+
+  @@map("users")
+}
+
+model File {
+  id          String   @id @default(uuid())
+  fileName    String
+  projectName String
+  code        String
+  userId      String
+  User        User     @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([userId, projectName], name: "UniqueProjectPerUser")
+  @@map("files")
+}
+
+model KeyBind {
+  id          String   @id @default(uuid())
+  combination String?
+  action      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("keybinds")
+}

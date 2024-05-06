@@ -1,0 +1,89 @@
+/* For WebKit browsers (e.g., Chrome, Safari) */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #333333;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #2d2d2d; /* Change thumb color on hover */
+}
+
+::-webkit-scrollbar-button {
+  display: none; /* Remove arrow symbols */
+}
+.project-list-container {
+  height: 100%;
+  width: 100%;
+  margin: 0px;
+  padding: 20px;
+  background-color: rgba(255, 255, 255, 0.801); /* Background color */
+  color: #333333; /* Text color */
+  font-size: larger;
+}
+.title-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header {
+  margin-bottom: 20px; /* Add margin below header */
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.801); /* Background color */
+  border-radius: 5px;
+  border: 1px solid #ccc; /* Border */
+  margin-bottom: 10px; /* Margin */
+  padding-right: 10px;
+}
+
+.search-bar input {
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+  margin-right: 10px;
+}
+
+.search-icon {
+  color: #333333;
+}
+
+.project-list {
+  width: 100%;
+}
+
+.project-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px;
+  background-color: rgba(255, 255, 255, 0.801); /* Background color */
+  color: #333333; /* Text color */
+  border-bottom: 1px solid #666; /* Border line */
+}
+
+.project-name {
+  margin-right: 10px;
+}
+
+.icons {
+  display: flex;
+}
+
+.edit-icon,
+.delete-icon,
+.open-icon {
+  margin-left: 10px;
+  color: #333333; /* Icon color */
+}
