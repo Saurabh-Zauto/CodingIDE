@@ -130,7 +130,7 @@ export class CodeService {
       if (fileName.endsWith('.java')) {
         command = 'java';
       } else if (fileName.endsWith('.py')) {
-        command = 'python';
+        command = 'python3';
       } else if (fileName.endsWith('.js')) {
         command = 'node';
       } else if (fileName.endsWith('.cpp')) {
