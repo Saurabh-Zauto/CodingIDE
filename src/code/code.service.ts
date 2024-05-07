@@ -73,10 +73,7 @@ export class CodeService {
     fileName: string,
   ): Promise<string> {
     return new Promise((resolve, reject) => {
-      const executablePath = path.join(
-        path.dirname(filePath),
-        fileName.replace('.cpp', ''),
-      );
+      const executablePath = filePath.replace('.cpp', '');
 
       const compileProcess = spawn('g++', [filePath, '-o', executablePath]);
       let compileErrorOutput = '';
@@ -87,7 +84,7 @@ export class CodeService {
 
       compileProcess.on('close', (code) => {
         if (code === 0) {
-          const runProcess = spawn('./' + fileName.replace('.cpp', ''));
+          const runProcess = spawn(executablePath);
           let output = '';
           let errorOutput = '';
 
