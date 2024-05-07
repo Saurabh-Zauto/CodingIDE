@@ -30,6 +30,25 @@ function MyHeader({
   setOutput,
   handleTabClick,
 }) {
+  const [cancelTokenSource, setCancelTokenSource] = useState(null);
+
+  useEffect(() => {
+    return () => {
+      // Cleanup: Cancel ongoing requests and remove event listeners
+      if (cancelTokenSource) {
+        cancelTokenSource.cancel('Operation canceled by the user.');
+      }
+    };
+  }, [cancelTokenSource]);
+
+  const handleStop = () => {
+    // Cancel ongoing requests
+    if (cancelTokenSource) {
+      cancelTokenSource.cancel('Operation canceled by the user.');
+      setCancelTokenSource(null); // Reset cancel token source
+    }
+  };
+
   const handleBeforeUnload = (event) => {
     if (code !== defaultCodes[language]) {
       const confirmationMessage =
@@ -178,6 +197,9 @@ function MyHeader({
   const handleRun = () => {
     setOutput('');
     handleTabClick('output');
+    const source = axios.CancelToken.source(); // Create a new cancel token source
+    setCancelTokenSource(source);
+
     axios
       .post(process.env.REACT_APP_PORTURL + '/code', {
         code,
@@ -213,7 +235,7 @@ function MyHeader({
           <PlayCircleOutlined />
           {'   '} Run
         </button>
-        <button className="btn btn-danger">
+        <button onClick={handleStop} className="btn btn-danger">
           <StopOutlined />
           {'   '} Stop
         </button>
