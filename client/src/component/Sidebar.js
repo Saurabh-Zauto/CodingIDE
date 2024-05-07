@@ -62,6 +62,9 @@ function MySidebar() {
             <span className="fs-5">My Project</span>
           </li>
           <li
+            onClick={() => {
+              navigate('/keybind');
+            }}
             style={{ cursor: 'pointer' }}
             className="cursor-pointer fs-6 mt-3"
           >
