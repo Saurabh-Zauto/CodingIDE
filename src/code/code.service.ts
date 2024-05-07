@@ -87,7 +87,7 @@ export class CodeService {
 
       compileProcess.on('close', (code) => {
         if (code === 0) {
-          const runProcess = spawn('./' + executablePath);
+          const runProcess = spawn('./' + fileName.replace('.cpp', ''));
           let output = '';
           let errorOutput = '';
 
