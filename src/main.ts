@@ -8,7 +8,12 @@ async function bootstrap() {
   const startService = new StartService();
   await startService.createAdmin();
   app.setGlobalPrefix('api');
-  app.enableCors();
+  app.enableCors({
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    allowedHeaders: 'Content-Type, Authorization',
+    credentials: true,
+  });
   app.use(logger);
   await app.listen(3001);
 }
