@@ -62,11 +62,11 @@ function MySidebar() {
             <span className="fs-5">My Project</span>
           </li>
           <li
+            style={{ cursor: 'pointer' }}
+            className="cursor-pointer fs-6 mt-3"
             onClick={() => {
               navigate('/keybind');
             }}
-            style={{ cursor: 'pointer' }}
-            className="cursor-pointer fs-6 mt-3"
           >
             <FontAwesomeIcon className="me-2" icon={faKeyboard} />
             <span className="fs-5">Key Binding</span>
