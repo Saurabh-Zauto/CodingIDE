@@ -141,7 +141,7 @@ int main()
 
     if (matchedShortcut) {
       if (matchedShortcut.action === 'Save') {
-        processSave();
+        handleSave();
         return;
       } else if (matchedShortcut.action === 'Run') {
         handleRun();
