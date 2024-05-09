@@ -9,6 +9,7 @@ import {
   faKeyboard,
 } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 function MySidebar() {
   const [login, setLogin] = useState(false);
@@ -25,6 +26,20 @@ function MySidebar() {
   const handleNew = () => {
     navigate('/');
     window.location.reload();
+  };
+
+  const handleProject = () => {
+    const token = localStorage.getItem('id');
+    if (!token) {
+      Swal.fire({
+        icon: 'error',
+        iconColor: '#333333',
+        title: 'Please Login First',
+        confirmButtonColor: '#333333',
+      });
+      return;
+    }
+    navigate('/project');
   };
 
   return (
@@ -54,9 +69,7 @@ function MySidebar() {
           <li
             style={{ cursor: 'pointer' }}
             className="cursor-pointer fs-6 mt-3"
-            onClick={() => {
-              navigate('/project');
-            }}
+            onClick={handleProject}
           >
             <FontAwesomeIcon className="me-2" icon={faFolderOpen} />
             <span className="fs-5">My Project</span>
@@ -86,7 +99,7 @@ function MySidebar() {
             <li
               onClick={() => {
                 localStorage.clear();
-                window.location.reload();
+                navigate('/');
               }}
               style={{ cursor: 'pointer' }}
               className="cursor-pointer fs-6 mt-3"

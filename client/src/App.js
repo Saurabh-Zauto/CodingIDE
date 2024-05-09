@@ -3,10 +3,11 @@ import './App.css';
 import MainLayout from './component/Layout';
 import Login from './component/Login';
 import MyProject from './component/Project';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import KeyBind from './component/KeyBind';
 import Swal from 'sweetalert2';
+import SignUp from './component/SignUp';
 
 function App() {
   const defaultCodes = {
@@ -37,7 +38,21 @@ int main()
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
   const [shortcut, setShortcut] = useState([]);
+
+  const ctrlRPressed = useRef(false);
+  const ctrlSPressed = useRef(false);
+
   const handleSave = () => {
+    const token = localStorage.getItem('id');
+    if (!token) {
+      Swal.fire({
+        icon: 'error',
+        iconColor: '#333333',
+        title: 'Please Login First',
+        confirmButtonColor: '#333333',
+      });
+      return;
+    }
     Swal.fire({
       title: 'Enter project name',
       input: 'text',
@@ -90,6 +105,7 @@ int main()
         console.log(err);
       });
   };
+
   const handleRun = () => {
     setOutput('');
     handleTabClick('output');
@@ -101,18 +117,17 @@ int main()
         input,
       })
       .then((res) => {
-        console.log(res.data);
         setOutput(res.data);
       })
       .catch((err) => {
         console.log(err);
       });
   };
+
   useEffect(() => {
     axios
       .get(process.env.REACT_APP_PORTURL + '/shortcut')
       .then((res) => {
-        console.log(res.data);
         setShortcut(res.data);
       })
       .catch((err) => {
@@ -120,50 +135,59 @@ int main()
       });
   }, []);
 
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.ctrlKey && (event.key === 'r' || event.keyCode === 82)) {
+        ctrlRPressed.current = true;
+        event.preventDefault();
+      } else if (event.ctrlKey && (event.key === 's' || event.keyCode === 83)) {
+        ctrlSPressed.current = true;
+        event.preventDefault();
+      }
+
+      const keyPressed = event.key;
+      const modifiers = [];
+
+      if (event.ctrlKey) modifiers.push('Ctrl');
+      if (event.altKey) modifiers.push('Alt');
+      if (event.shiftKey) modifiers.push('Shift');
+
+      const combination = [...modifiers, keyPressed].join(' + ');
+      const matchedShortcut = shortcut.find(
+        (shortcut) => shortcut.combination === combination,
+      );
+
+      if (matchedShortcut) {
+        if (matchedShortcut.action === 'Save' && ctrlSPressed.current) {
+          handleSave();
+          ctrlSPressed.current = false;
+          return;
+        } else if (matchedShortcut.action === 'Run' && ctrlRPressed.current) {
+          handleRun();
+          ctrlRPressed.current = false;
+          return;
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [handleSave, handleRun, shortcut]);
+
   const [activeTab, setActiveTab] = useState('input');
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
 
-  const handleKeyDown = (event) => {
-    const keyPressed = event.key;
-    const modifiers = [];
-
-    if (event.ctrlKey) modifiers.push('Ctrl');
-    if (event.altKey) modifiers.push('Alt');
-    if (event.shiftKey) modifiers.push('Shift');
-
-    const combination = [...modifiers, keyPressed].join(' + ');
-    const matchedShortcut = shortcut.find(
-      (shortcut) => shortcut.combination === combination,
-    );
-
-    if (matchedShortcut) {
-      if (matchedShortcut.action === 'Save') {
-        handleSave();
-        return;
-      } else if (matchedShortcut.action === 'Run') {
-        handleRun();
-        return;
-      }
-    }
-
-    // Prevent default browser behavior for Ctrl + R
-    if (
-      (event.ctrlKey && event.keyCode === 82) ||
-      (event.ctrlKey && event.keyCode === 83)
-    ) {
-      event.preventDefault();
-    }
-  };
-
-  document.addEventListener('keydown', handleKeyDown);
-
   return (
     <div className="App" style={{ height: '100vh' }}>
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<SignUp />} />
         <Route
           path="/"
           element={

@@ -1,40 +1,36 @@
+import axios from 'axios';
 import React, { useState } from 'react';
-import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import logo from '../logobg.png';
 import './Login.css';
-import axios from 'axios';
 
-const Login = () => {
+function SignUp() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
+  const [conformPassword, setConformPassword] = useState('');
   const navigate = useNavigate();
 
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
-
-  const handleLogin = (event) => {
+  const handleSignUp = (event) => {
     event.preventDefault();
-    axios
-      .post(process.env.REACT_APP_PORTURL + '/auth/signin', { email, password })
-      .then((res) => {
-        if (res.data.token) {
-          localStorage.setItem('id', res.data.token);
-          navigate('/');
-        } else {
-          alert('Invalid Credentials');
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-
+    if (password === conformPassword) {
+      axios
+        .post(process.env.REACT_APP_PORTURL + '/auth/signup', {
+          email,
+          password,
+        })
+        .then((res) => {
+          navigate('/login');
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      alert('Passwords do not match');
+    }
     setEmail('');
     setPassword('');
+    setConformPassword('');
   };
-
   return (
     <section className="background-radial-gradient">
       <div
@@ -50,7 +46,7 @@ const Login = () => {
           <div
             onClick={() => navigate('/')}
             className="col-lg-6 mb-lg-0"
-            style={{ zIndex: 10, cursor: 'pointer' }}
+            style={{ zIndex: 10 ,cursor:'pointer'}}
           >
             <img src={logo} className="w-50" alt="" />
             <h2
@@ -73,9 +69,9 @@ const Login = () => {
 
             <div className="card bg-glass">
               <div className="card-body px-4 py-5 px-md-5">
-                <form onSubmit={handleLogin}>
+                <form onSubmit={handleSignUp}>
                   <center>
-                    <h2>Login</h2>
+                    <h2>Sign Up</h2>
                   </center>
                   <div className="form-outline mb-4 ms-0">
                     <label
@@ -103,21 +99,32 @@ const Login = () => {
                     </label>
                     <div className="input-group">
                       <input
-                        type={showPassword ? 'text' : 'password'}
+                        type="password"
                         id="form3Example4"
                         className="form-control"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
                       />
-                      <button
-                        className="btn"
-                        style={{ background: '#333333', color: 'white' }}
-                        type="button"
-                        onClick={togglePasswordVisibility}
-                      >
-                        {showPassword ? <FaEyeSlash /> : <FaEye />}
-                      </button>
+                    </div>
+                  </div>
+
+                  <div className="form-outline mb-4">
+                    <label
+                      className="form-label w-100 text-start"
+                      htmlFor="form3Example5"
+                    >
+                      Confirm Password
+                    </label>
+                    <div className="input-group">
+                      <input
+                        type="password"
+                        id="form3Example5"
+                        className="form-control"
+                        value={conformPassword}
+                        onChange={(e) => setConformPassword(e.target.value)}
+                        required
+                      />
                     </div>
                   </div>
 
@@ -129,13 +136,13 @@ const Login = () => {
                           style={{ background: '#333333', color: 'white' }}
                           className="btn btn-block mb-4"
                         >
-                          Login
+                          Sign up
                         </button>
                       </div>
                     </div>
                   </div>
-                  <a style={{ color: '#333333' }} href="/signup">
-                    Don't have an account? Sign up
+                  <a style={{ color: '#333333' }} href="/login">
+                    Already have an account? Login
                   </a>
                 </form>
               </div>
@@ -145,6 +152,6 @@ const Login = () => {
       </div>
     </section>
   );
-};
+}
 
-export default Login;
+export default SignUp;

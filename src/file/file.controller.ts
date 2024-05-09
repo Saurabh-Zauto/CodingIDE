@@ -18,14 +18,14 @@ import { AuthGuard } from 'src/guard/auth.guard';
 @Controller('file')
 @UseGuards(AuthGuard)
 export class FileController {
-  constructor(private readonly fileService: FileService) {}
+  constructor(private readonly fileService: FileService) { }
 
   @Get()
   async getFiles(@Req() request: IRequest) {
     if (request.token) {
       return await this.fileService.getFiles(request.token);
     } else {
-      throw new UnauthorizedException('Unauthorized access');
+      return null
     }
   }
 

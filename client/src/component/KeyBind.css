@@ -4,8 +4,8 @@
   width: 100vw;
   height: 100vh;
   overflow: auto;
-  background-color: #2b2b2b; /* Major color for background */
-  color: #333333; /* Text color */
+  background-color: #eaeaea; /* Major color for background */
+  color: #000000; /* Text color */
   display: flex;
   justify-content: center;
   padding-top: 5%; /* Adjust spacing from the top */
@@ -21,28 +21,30 @@
 .custom-table th,
 .custom-table td {
   padding: 12px; /* Increase padding for better spacing */
-  border: 1px solid #333333; /* Border color */
-  color: #333333; /* Text color */
+  border: 1px solid #000000; /* Border color */
+  color: #000000; /* Text color */
 }
 
 .custom-table th {
-  background-color: #f0f0f0; /* Header background color */
+  background-color: #333333; /* Header background color */
   font-weight: bold; /* Make header text bold */
+  color: #ffffff; /* Header text color */
 }
 
 .custom-table th,
 .custom-table td {
   text-align: left;
+  color: #ffffff; /* Header text color */
 }
 
 .custom-table tbody tr:nth-child(even) {
-  background-color: #f5f5f5; /* Alternate row background color */
+  background-color: #3d3d3d; /* Alternate row background color */
 }
 
 .custom-table tbody tr:nth-child(odd) {
-  background-color: #e0e0e0; /* Alternate row background color */
+  background-color: #333333; /* Alternate row background color */
 }
 
 .custom-table tbody tr:hover {
-  background-color: #d0d0d0; /* Hover row background color */
+  background-color: #555555; /* Hover row background color */
 }

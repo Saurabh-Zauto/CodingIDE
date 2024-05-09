@@ -276,7 +276,7 @@ function MyHeader({
             ]}
           />
         </div>
-        <div
+        {/* <div
           style={{ display: 'grid', placeItems: 'center' }}
           onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
         >
@@ -285,7 +285,7 @@ function MyHeader({
           ) : (
             <MoonOutlined style={{ fontSize: '25px' }} />
           )}
-        </div>
+        </div> */}
       </div>
     </div>
   );

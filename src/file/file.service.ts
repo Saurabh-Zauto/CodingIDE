@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { JwtPayload, decodeJwtToken } from 'src/util';
 
@@ -41,6 +41,10 @@ export class FileService {
 
   async getFiles(token: string) {
     const { userId } = decodeJwtToken(token) as JwtPayload;
+    if (!userId) {
+      return null
+    }
+
     return await this.prisma.file.findMany({
       where: { userId },
       orderBy: { createdAt: 'desc' },

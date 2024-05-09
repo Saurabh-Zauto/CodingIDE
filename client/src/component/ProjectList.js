@@ -27,7 +27,9 @@ function MyProjectList({
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((response) => {
-        setProjects(response.data);
+        if (response.data) {
+          setProjects(response.data);
+        }
       })
       .catch((error) => {
         console.error(error);
@@ -161,6 +163,9 @@ function MyProjectList({
             </div>
           </div>
         ))}
+        {filteredProjects.length === 0 && (
+          <div className="no-projects">No projects found.</div>
+        )}
       </div>
     </div>
   );
