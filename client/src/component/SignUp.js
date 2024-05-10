@@ -22,10 +22,13 @@ function SignUp() {
           navigate('/login');
         })
         .catch((err) => {
-          console.log(err);
+          alert(err.response.data.message);
         });
     } else {
       alert('Passwords do not match');
+      setPassword('');
+      setConformPassword('');
+      return;
     }
     setEmail('');
     setPassword('');
@@ -46,7 +49,7 @@ function SignUp() {
           <div
             onClick={() => navigate('/')}
             className="col-lg-6 mb-lg-0"
-            style={{ zIndex: 10 ,cursor:'pointer'}}
+            style={{ zIndex: 10, cursor: 'pointer' }}
           >
             <img src={logo} className="w-50" alt="" />
             <h2

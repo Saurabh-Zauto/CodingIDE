@@ -9,12 +9,13 @@ datasource db {
 
 model User {
   id        String   @id @default(uuid())
-  email     String
+  email     String   @unique
   password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   Files File[]
+  Keys  KeyBind[]
 
   @@map("users")
 }
@@ -37,8 +38,11 @@ model KeyBind {
   id          String   @id @default(uuid())
   combination String?
   action      String
+  userId      String
+  User        User     @relation(fields: [userId], references: [id])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  @@unique([userId, combination], name: "UniqueKeyBind")
   @@map("keybinds")
 }

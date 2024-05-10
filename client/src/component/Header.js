@@ -4,11 +4,11 @@ import Swal from 'sweetalert2';
 import {
   CloudDownloadOutlined,
   CloudUploadOutlined,
-  MoonOutlined,
+  // MoonOutlined,
   PlayCircleOutlined,
   SaveOutlined,
   StopOutlined,
-  SunOutlined,
+  // SunOutlined,
 } from '@ant-design/icons';
 import { Select } from 'antd';
 import axios from 'axios';
@@ -42,10 +42,9 @@ function MyHeader({
   }, [cancelTokenSource]);
 
   const handleStop = () => {
-    // Cancel ongoing requests
     if (cancelTokenSource) {
       cancelTokenSource.cancel('Operation canceled by the user.');
-      setCancelTokenSource(null); // Reset cancel token source
+      setCancelTokenSource(null);
     }
   };
 
@@ -64,6 +63,7 @@ function MyHeader({
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
+    // eslint-disable-next-line
   }, [code, defaultCodes]);
 
   const handleLanguageChange = (value) => {

@@ -23,6 +23,7 @@ const Login = () => {
         if (res.data.token) {
           localStorage.setItem('id', res.data.token);
           navigate('/');
+          window.location.reload();
         } else {
           alert('Invalid Credentials');
         }

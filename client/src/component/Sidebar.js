@@ -100,6 +100,7 @@ function MySidebar() {
               onClick={() => {
                 localStorage.clear();
                 navigate('/');
+                window.location.reload();
               }}
               style={{ cursor: 'pointer' }}
               className="cursor-pointer fs-6 mt-3"

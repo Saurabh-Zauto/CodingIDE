@@ -15,44 +15,49 @@ export class ShortcutService {
       console.error('Error initializing PrismaClient:', error);
     }
   }
-  async create(createShortcutDto: CreateShortcutDto) {
+  async create(token: string, createShortcutDto: CreateShortcutDto) {
+    const { userId } = decodeJwtToken(token) as JwtPayload;
     const shortcut = await this.prisma.keyBind.create({
       data: {
+        userId,
         ...createShortcutDto,
       },
     });
     return shortcut;
   }
 
-  async findAll() {
-    const keys = await this.prisma.keyBind.findMany();
+  async findAll(token: string) {
+    const { userId } = decodeJwtToken(token) as JwtPayload;
+    if (!userId) {
+      return []
+    }
+    const keys = await this.prisma.keyBind.findMany({ where: { userId } });
     const data = keys.map((key) => {
       return {
+        id: key.id,
         combination: key.combination,
         action: key.action,
       };
     });
-    console.log(data);
-
     return data;
   }
 
-  // async update(
-  //   token: string,
-  //   id: string,
-  //   updateShortcutDto: UpdateShortcutDto,
-  // ) {
-  //   const { userId } = decodeJwtToken(token) as JwtPayload;
-  //   const key = await this.prisma.keyBind.update({
-  //     where: { id },
-  //     data: { ...updateShortcutDto },
-  //   });
-  //   return key;
-  // }
+  async update(
+    token: string,
+    id: string,
+    updateShortcutDto: UpdateShortcutDto,
+  ) {
+    const { userId } = decodeJwtToken(token) as JwtPayload;
+    const key = await this.prisma.keyBind.update({
+      where: { id },
+      data: { ...updateShortcutDto },
+    });
+    return key;
+  }
 
-  // async remove(token: string, id: string) {
-  //   const { userId } = decodeJwtToken(token) as JwtPayload;
-  //   const key = await this.prisma.keyBind.delete({ where: { id } });
-  //   return key;
-  // }
+  async remove(token: string, id: string) {
+    const { userId } = decodeJwtToken(token) as JwtPayload;
+    const key = await this.prisma.keyBind.delete({ where: { id } });
+    return key;
+  }
 }

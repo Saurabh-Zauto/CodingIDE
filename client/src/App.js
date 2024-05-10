@@ -10,6 +10,7 @@ import Swal from 'sweetalert2';
 import SignUp from './component/SignUp';
 
 function App() {
+  const [cancelTokenSource, setCancelTokenSource] = useState(null);
   const defaultCodes = {
     java: `
 public class Main
@@ -18,7 +19,7 @@ public class Main
     System.out.println("Hello World");
   }
 }
-    `,
+`,
     c_cpp: `
 #include <stdio.h>
 
@@ -38,9 +39,9 @@ int main()
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
   const [shortcut, setShortcut] = useState([]);
+  const [refresh, setRefresh] = useState(false);
 
-  const ctrlRPressed = useRef(false);
-  const ctrlSPressed = useRef(false);
+  const ctrlPressed = useRef(false);
 
   const handleSave = () => {
     const token = localStorage.getItem('id');
@@ -109,6 +110,8 @@ int main()
   const handleRun = () => {
     setOutput('');
     handleTabClick('output');
+    const source = axios.CancelToken.source(); // Create a new cancel token source
+    setCancelTokenSource(source);
     axios
       .post(process.env.REACT_APP_PORTURL + '/code', {
         code,
@@ -124,25 +127,157 @@ int main()
       });
   };
 
+  const handleDownload = () => {
+    const blob = new Blob([code], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    language === 'java'
+      ? (a.download = 'Main.java')
+      : language === 'python'
+        ? (a.download = 'code.py')
+        : language === 'c_cpp'
+          ? (a.download = 'code.cpp')
+          : (a.download = 'code.js');
+    a.click();
+    URL.revokeObjectURL(url);
+    let timerInterval;
+    Swal.fire({
+      icon: 'success',
+      iconColor: '#333333',
+      title: 'File Downloaded Successfully',
+      confirmButtonColor: '#333333',
+      timer: 1500,
+      willClose: () => {
+        clearInterval(timerInterval);
+      },
+    });
+  };
+  const handleBeforeUnload = (event) => {
+    if (code !== defaultCodes[language]) {
+      const confirmationMessage =
+        'You have unsaved changes. Are you sure you want to leave?';
+      event.returnValue = confirmationMessage;
+      return confirmationMessage;
+    }
+  };
+
+  const handleUpload = () => {
+    handleBeforeUnload();
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.java, .py, .cpp, .js, .txt';
+    input.onchange = (e) => {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setCode(e.target.result);
+        let timerInterval;
+        Swal.fire({
+          icon: 'success',
+          iconColor: '#333333',
+          title: 'File Uploaded Successfully',
+          confirmButtonColor: '#333333',
+          timer: 1500,
+          willClose: () => {
+            clearInterval(timerInterval);
+          },
+        });
+      };
+      reader.readAsText(file);
+    };
+    input.click();
+  };
+
+  const handleStop = () => {
+    if (cancelTokenSource) {
+      cancelTokenSource.cancel('Operation canceled by the user.');
+      setCancelTokenSource(null);
+    }
+  };
+
   useEffect(() => {
+    return () => {
+      // Cleanup: Cancel ongoing requests and remove event listeners
+      if (cancelTokenSource) {
+        cancelTokenSource.cancel('Operation canceled by the user.');
+      }
+    };
+  }, [cancelTokenSource]);
+
+  useEffect(() => {
+    const token = localStorage.getItem('id');
     axios
-      .get(process.env.REACT_APP_PORTURL + '/shortcut')
+      .get(process.env.REACT_APP_PORTURL + '/shortcut', {
+        headers: { Authorization: `Bearer ${token}` },
+      })
       .then((res) => {
         setShortcut(res.data);
       })
       .catch((err) => {
         console.log(err);
       });
-  }, []);
+  }, [refresh]);
 
   useEffect(() => {
     const handleKeyDown = (event) => {
-      if (event.ctrlKey && (event.key === 'r' || event.keyCode === 82)) {
-        ctrlRPressed.current = true;
+      if (
+        (event.ctrlKey &&
+          (shortcut.some((shortcut) => {
+            if (event.key === 'Ctrl' || event.key === 'Alt') {
+              return false;
+            }
+            return (
+              shortcut.combination.toLowerCase().includes('Ctrl') &&
+              shortcut.combination
+                .toLowerCase()
+                .endsWith(event.key.toLowerCase())
+            );
+          }) ||
+            shortcut.some((shortcut) => {
+              if (
+                String.fromCharCode(event.keyCode) === 'Ctrl' ||
+                String.fromCharCode(event.keyCode) === 'Alt'
+              ) {
+                return false;
+              }
+              return (
+                shortcut.combination.toLowerCase().includes('Ctrl') &&
+                shortcut.combination
+                  .toLowerCase()
+                  .endsWith(String.fromCharCode(event.keyCode).toLowerCase())
+              );
+            }))) ||
+        (event.altKey &&
+          (shortcut.some((shortcut) => {
+            if (event.key === 'Ctrl' || event.key === 'Alt') {
+              return false;
+            }
+            return (
+              shortcut.combination.toLowerCase().includes('Alt') &&
+              shortcut.combination
+                .toLowerCase()
+                .endsWith(event.key.toLowerCase())
+            );
+          }) ||
+            shortcut.some((shortcut) => {
+              if (
+                String.fromCharCode(event.keyCode) === 'Ctrl' ||
+                String.fromCharCode(event.keyCode) === 'Alt'
+              ) {
+                return false;
+              }
+              return (
+                shortcut.combination.toLowerCase().includes('Alt') &&
+                shortcut.combination
+                  .toLowerCase()
+                  .endsWith(String.fromCharCode(event.keyCode).toLowerCase())
+              );
+            })))
+      ) {
         event.preventDefault();
-      } else if (event.ctrlKey && (event.key === 's' || event.keyCode === 83)) {
-        ctrlSPressed.current = true;
-        event.preventDefault();
+        ctrlPressed.current = true;
+        console.log('Matched', event.keyCode, event.key);
       }
 
       const keyPressed = event.key;
@@ -158,14 +293,18 @@ int main()
       );
 
       if (matchedShortcut) {
-        if (matchedShortcut.action === 'Save' && ctrlSPressed.current) {
-          handleSave();
-          ctrlSPressed.current = false;
-          return;
-        } else if (matchedShortcut.action === 'Run' && ctrlRPressed.current) {
+        if (matchedShortcut.action === 'run') {
           handleRun();
-          ctrlRPressed.current = false;
-          return;
+        } else if (matchedShortcut.action === 'save') {
+          handleSave();
+        } else if (matchedShortcut.action === 'upload') {
+          handleUpload();
+        } else if (matchedShortcut.action === 'download') {
+          handleDownload();
+        } else if (matchedShortcut.action === 'stop') {
+          handleStop();
+        } else if (matchedShortcut.action === 'new') {
+          window.location.reload();
         }
       }
     };
@@ -175,7 +314,8 @@ int main()
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [handleSave, handleRun, shortcut]);
+    // eslint-disable-next-line
+  }, [shortcut]);
 
   const [activeTab, setActiveTab] = useState('input');
 
@@ -232,7 +372,13 @@ int main()
         />
         <Route
           path="/keybind"
-          element={<KeyBind tableData={shortcut} />}
+          element={
+            <KeyBind
+              tableData={shortcut}
+              setRefresh={setRefresh}
+              refresh={refresh}
+            />
+          }
         ></Route>
       </Routes>
     </div>
