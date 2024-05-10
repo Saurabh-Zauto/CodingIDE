@@ -42,6 +42,20 @@ function MySidebar() {
     navigate('/project');
   };
 
+  const handleKeyBind = () => {
+    const token = localStorage.getItem('id');
+    if (!token) {
+      Swal.fire({
+        icon: 'error',
+        iconColor: '#333333',
+        title: 'Please Login First',
+        confirmButtonColor: '#333333',
+      });
+      return;
+    }
+    navigate('/keybind');
+  };
+
   return (
     <div style={{ width: '100%', height: '100%' }}>
       <img
@@ -77,9 +91,7 @@ function MySidebar() {
           <li
             style={{ cursor: 'pointer' }}
             className="cursor-pointer fs-6 mt-3"
-            onClick={() => {
-              navigate('/keybind');
-            }}
+            onClick={handleKeyBind}
           >
             <FontAwesomeIcon className="me-2" icon={faKeyboard} />
             <span className="fs-5">Key Binding</span>
